@@ -81,22 +81,23 @@ WSGI_APPLICATION = "food_site.wsgi.application"
 
 # DATABASES = {
 #     "default": {
-#         "ENGINE": "django.db.backends.sqlite3",
-#         "NAME": BASE_DIR / "db.sqlite3",
+#         "ENGINE": "django.db.backends.mysql",
+#         'OPTIONS': {'sql_mode': 'traditional',},
+#         "NAME": "food2",
+#         "USER": "root",
+#         "PASSWORD": "",
 #     }
 # }
-
 DATABASES = {
     "default": {
         "ENGINE": "django.db.backends.mysql",
         'OPTIONS': {'sql_mode': 'traditional',},
-        "NAME": "food2",
-        "USER": "root",
-        "PASSWORD": "",
-
+        "NAME": config('DB_NAME'),
+        "USER": config('DB_USER'),
+        "PASSWORD": config('DB_PASSWORD'),
+        "HOST": config('DB_HOST'),
     }
 }
-
 #i made changes
 AUTH_USER_MODEL = 'accounts.User'
 
@@ -142,4 +143,17 @@ MEDIA_ROOT = BASE_DIR /'media'
 
 DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 
-#CSRF_TRUSTED_ORIGINS = ['https://your-domain.com','127.0.0.1',  'https://www.your-domain.com']
+CSRF_TRUSTED_ORIGINS = ["https://*", "http://*"]
+
+from django.contrib.messages import constants as messages
+MESSAGE_TAGS={
+    messages.ERROR: 'danger',
+}
+
+#Email config
+EMAIL_HOST = config('EMAIL_HOST')
+EMAIL_PORT = config('EMAIL_PORT',cast=int)
+EMAIL_HOST_USER = config('EMAIL_HOST_USER')
+EMAIL_HOST_PASSWORD = config('EMAIL_HOST_PASSWORD')
+EMAIL_USE_TLS = True
+DEFAULT_FROM_EMAIL = 'foodOnline Marketplace <kailash14916@gmail.com>'

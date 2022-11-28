@@ -18,12 +18,6 @@ urlpatterns = [
     path('reset_password/',views.reset_password,name='reset_password'),
     path('reset_password_validate/<uidb64>/<token>',views.reset_password_validate,name='reset_password_validate'),
     #path('checkrequest/',views.checkrequest,name='checkrequest'),
-<<<<<<< HEAD
     path('vendor/',include('vendor.urls'))
 
-||||||| f49d4bb
-
-=======
-   
->>>>>>> bf1de62b0b0ec066abed91ad288d7785a6784617
 ]

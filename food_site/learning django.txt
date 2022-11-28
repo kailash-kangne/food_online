@@ -1,0 +1,318 @@
+food project : 59
+
+https://getbootstrap.com/docs/4.0/layout/grid/
+https://developer.mozilla.org/en-US/docs/Web/HTTP/Status
+
+djvajlarogsbrdzw
+_________________________________________________________
+#SIGNALS
+
+from .models import User, UserProfile
+from django.db.models.signals import post_save, pre_save
+from django.dispatch import receiver
+
+@receiver(post_save, sender=User)
+def post_save_create_profile_receiver(sender, instance,created,**kwargs):
+    print(created,'###########################################')
+    if created:
+        UserProfile.objects.create(user=instance)
+        print('user profile created')
+    else:
+        try:
+            profile=UserProfile.objects.get(user=instance)
+            profile.save()
+            print('user is updated')
+        except:
+            # Create the userprofile if not exist
+            UserProfile.objects.create(user=instance)
+
+
+
+_________________________________________________________
+
+#FORMS
+
+from django import forms
+from .models import User
+
+class UserForm(forms.ModelForm):
+    password=forms.CharField(widget=forms.PasswordInput())
+    confirm_password=forms.CharField(widget=forms.PasswordInput())
+    class Meta:
+        model = User
+        fields = ['first_name', 'last_name','username', 'email','phone_number', 'password']
+    
+    def clean(self):
+        cleaned_data = super(UserForm, self).clean()
+        password = cleaned_data.get('password')
+        confirm_password = cleaned_data.get('confirm_password')
+
+        if password!= confirm_password:
+            raise forms.ValidationError('Passwords do not match')
+
+
+
+--------------------------------------------------------
+
+<form action={% url 'registerUser' %} method="post">
+{% csrf_token %}
+..
+</form>
+---------------------------------------------------------
+#before submit button
+
+{% comment %} HANDLE FIELD ERROR {% endcomment %}
+<ul class="errorlist">
+	{% for field in form  %}
+		{% if field.errors %}
+			{% for error in field.errors  %}
+				<li style='color:red;'>{{error}}</li>
+			{% endfor %}
+		{% endif %}
+	{% endfor %}
+</ul>
+{% comment %} HANDLE NON-FIELD ERROR {% endcomment %}
+<ul style="color:red;">
+	{{form.non_field_errors}}
+</ul>
+_________________________________________________________
+
+#MESSAGE
+
+from django.contrib import messages
+messages.success(request, "YOUR ACCOUNT HAS BEEN REGISTERED SUCCESSFULY")
+------------------------------------------------------------------------
+#after submit button
+
+<div class="row">
+	{% if messages %}
+		{% for message in messages  %}
+			<div class="alert alert-success" role='alert'>
+				{{message}}
+			</div>
+		{% endfor %}
+	{% endif %}
+</div>
+
+_________________________________________________________
+
+#receive multi files/photos from FORMS
+
+<form action={% url 'registerVendor' %} class="form-fields-set foodbakery-dev-restaurant-form" method="post" enctype='multipart/form-data'>
+{% csrf_token %}
+
+_________________________________________________________
+
+#auth.authenticate
+
+from django.contrib import messages, auth
+
+def login(request):
+    if request.user.is_authenticated:
+        messages.warning(request, 'You are not logged in')
+        return redirect('dashboard')
+    elif request.method == 'POST':
+        email = request.POST['email']
+        password = request.POST['password']
+        
+        user=auth.authenticate(email=email,password=password)
+
+        if user is not None:
+            auth.login(request, user)
+            messages.success(request,'You are now logged in')
+            return redirect('dashboard')
+        else:
+            messages.error(request,'Invalid email or password')
+            return redirect('login')
+    else:
+        return render(request, 'accounts/login.html')
+
+#navbar.html
+
+{% if user.is_authenticated %}
+		<a class="cs-color cs-popup-joinus-btn login-popup" data-target="#sign-in"  href={% url 'dashboard' %}>Dashboard</a>
+			<a class="cs-color cs-popup-joinus-btn login-popup text-danger" data-target="#sign-in"  href={% url 'logout' %}>Logout</a> 
+		{% else %}
+			<a class="cs-color cs-popup-joinus-btn login-popup" data-target="#sign-in"  href={% url 'login' %}>Login</a> 
+			/ <span> <a href={% url 'registerUser' %}> Register</a> </span>
+			<a class="get-start-btn" href={% url 'registerVendor' %}> Register Restaurant </a>
+{% endif %}		
+_________________________________________________________
+
+#accounts/views.py
+
+from .utils import detectUser
+from django.contrib.auth.decorators import login_required,user_passes_test
+
+@login_required(login_url='login')
+def myAccount(request):
+    user= request.user
+    redirectUrl = detectUser(user)
+    return redirect(redirectUrl)
+
+#accounts/utils.py
+
+def detectUser(user):
+    if user.role == 1:
+        redirectUrl='vendorDashboard'
+    elif user.role == 2:
+        redirectUrl='custDashboard'
+    elif user.role == None and user.is_superadmin:
+        redirectUrl = '/admin'
+    return redirectUrl
+_________________________________________________________
+
+#restrict the user and vendor accessing each other's page.
+
+from django.core.exceptions import PermissionDenied
+
+def check_role_vendor(user):
+    if user.role==1:
+        return True
+    else:
+        raise PermissionDenied
+
+def check_role_customer(user):
+    if user.role==2:
+        return True
+    else:
+        raise PermissionDenied
+
+@login_required(login_url='login')
+@user_passes_test(check_role_customer)
+def custDashboard(request):
+    return render(request, 'accounts/custDashboard.html')
+
+@login_required(login_url='login')
+@user_passes_test(check_role_vendor)
+def vendorDashboard(request):
+    return render(request, 'accounts/vendorDashboard.html')
+
+_________________________________________________________
+
+#template/403.html
+
+<p>You are not authorized to view this page</p>
+_________________________________________________________
+
+#accounts/views.py
+
+from django.contrib.auth.tokens import default_token_generator
+from django.utils.http import urlsafe_base64_decode
+
+def activate(request,uidb64,token):
+    #activate the user by setting the is_active status to True
+    try:
+        uid=urlsafe_base64_decode(uidb64).decode()
+        user=User._default_manager.get(pk=uid)
+    except(TypeError,ValueError,OverflowError,User.DoesNotExist):
+        user=None
+    
+    if user is not None and default_token_generator.check_token(user,token):
+        user.is_active=True
+        user.save()
+        messages.success(request,"congratultions! your account is activate.")
+        return redirect('myAccount')
+    else:
+        messages.error(request,"Invalid activation link/token")
+        return redirect('myAccount')
+
+#accounts/utils.py
+
+from django.contrib.sites.shortcuts import get_current_site
+from django.template.loader import render_to_string
+from django.utils.http import urlsafe_base64_encode
+from django.utils.encoding import force_bytes
+from django.contrib.auth.tokens import default_token_generator
+from django.core.mail import EmailMessage
+from django.conf import settings
+
+def send_verification_email(request,user):
+    from_email=settings.DEFAULT_FROM_EMAIL
+    current_site=get_current_site(request)
+    mail_subject='Plz activate your account'
+    message=render_to_string('accounts/emails/account_verification_email.html',{
+        'user':user,
+        'domain':current_site,
+        'uid':urlsafe_base64_encode(force_bytes(user.pk)),
+        'token':default_token_generator.make_token(user),
+    })
+    to_email=user.email
+    mail=EmailMessage(mail_subject,message,from_email,to=[to_email])
+    mail.send()
+	
+	
+#accounts/emails/account_verification_email.html
+
+{% autoescape off %}
+
+Hi {{user.first_name}},
+
+Please click on below link to confirm your registration.
+http://{{domain}}{% url 'activate' uidb64=uid token=token %}
+
+Thanks,
+foodOnline
+{% endautoescape %}
+
+
+_________________________________________________________
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

@@ -1,0 +1,14 @@
+{% autoescape off %}
+
+Hi {{user.first_name}},
+
+{% if is_approved %}
+congo! your restaurant has been approved by our admin.
+{% else %}
+we're sorry, you are not eligible for publishing your food menu on our marketpalce.
+for more details contact support@foodonline.com
+{% endif %}
+
+Thanks,
+foodOnline
+{% endautoescape %}

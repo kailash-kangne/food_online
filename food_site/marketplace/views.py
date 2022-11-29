@@ -15,6 +15,3 @@ def checkout(request):
         'form':form,
     }
     return render(request, 'marketplace/checkout.html',context)
-
-def place_order(request):
-    return render(request, 'marketplace/place_order.html')

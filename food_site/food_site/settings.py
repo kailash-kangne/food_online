@@ -161,5 +161,5 @@ EMAIL_HOST_PASSWORD = config('EMAIL_HOST_PASSWORD')
 EMAIL_USE_TLS = True
 DEFAULT_FROM_EMAIL = 'foodOnline Marketplace <kailash14916@gmail.com>'
 
-RZP_KEY_ID = ''
-RZP_KEY_SECRET = ''
+RZP_KEY_ID = 'rzp_test_TMto6YXQia1axD'
+RZP_KEY_SECRET = 'gy009d5PH8MaTlj2ZKBmEdxS'

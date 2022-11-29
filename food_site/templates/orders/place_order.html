@@ -1,0 +1,104 @@
+<html>
+<div id='rzp payment button'>
+    <button class='btn btn-danger w-100 p-2' id='rzp-button1'> pay with razorpay </button>
+    <script src="https://checkout.razorpay.com/v1/checkout.js"></script>
+</div>
+
+<script>
+
+    function getCookie(name) {
+        let cookieValue = null;
+        if (document.cookie && document.cookie !== '') {
+            const cookies = document.cookie.split(';');
+            for (let i = 0; i < cookies.length; i++) {
+                const cookie = cookies[i].trim();
+                // Does this cookie string begin with the name we want?
+                if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                    cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                    break;
+                    }
+                }
+            }
+            return cookieValue;
+        }
+
+    var order_number = "53"
+    const csrftoken = getCookie('csrftoken');
+
+    // razorpay payment gateway
+    
+    var options = {
+        "key": "{{keyid}}", // Enter the Key ID generated from the Dashboard
+        "amount": "{{ amount }}", // Amount is in currency subunits. Default currency is INR. Hence, 50000 refers to 50000 paise
+        "currency": "INR",
+        "name": "Alecta ventures",
+        "description": "Test Transaction",
+        "image": "https://example.com/your_logo",
+        "order_id": "{{orderid}}", //This is a sample Order ID. Pass the `id` obtained in the response of Step 1
+        //"callback_url": "https://eneqd3r9zrjok.x.pipedream.net/",
+        "handler": function (response){
+            // alert(response.razorpay_payment_id);
+            // alert(response.razorpay_order_id);
+            // alert(response.razorpay_signature)
+            // Replace the above to show a success message within this page, e.g.
+            const element = document.getElementById('rzp_payment_button');
+            element.innerHTML = '';
+            element.innerHTML = '<h4 class="text-center"><i class="fa fa-spinner fa-spin"></i> Please wait...</h4>';
+
+            var transaction_id = response.razorpay_payment_id
+            var payment_method = 'RazorPay'
+            var status = 'Success'
+            sendTransaction(transaction_id, payment_method, status)
+        },
+        "prefill": {
+            "name": "kailash",
+            "email": "xenderq@gmail.com",
+            "contact": "8971549257"
+        },
+        "notes": {
+            "address": "Razorpay Corporate Office"
+        },
+        "theme": {
+            "color": "#3399cc"
+        }
+    };
+    var rzp1 = new Razorpay(options);
+    console.log(rzp1)
+    rzp1.on('payment.failed', function (response){
+        alert(response)
+        alert("errorcode1"+response.error.code);
+        alert("errorcode1"+response.error.description);
+        alert("errorcode1"+response.error.source);
+        alert("errorcode1"+response.error.step);
+        alert("errorcode1"+response.error.reason);
+        alert("errorcode1"+response.error.metadata.order_id);
+        alert("errorcode1"+response.error.metadata.payment_id);
+    });
+
+    document.getElementById('rzp-button1').onclick = function(e){
+        rzp1.open();
+        e.preventDefault();
+    }
+    // razorpay payment gateway
+
+    // Send the data to payments view to store in the database
+    function sendTransaction(transaction_id, payment_method, status){
+        $.ajax({
+            type: 'POST',
+            url: url,
+            data: {
+                'order_number': order_number,
+                'transaction_id': transaction_id,
+                'payment_method': payment_method,
+                'status': status,
+                'csrfmiddlewaretoken': csrftoken
+            },
+            success: function(response){
+                console.log('response==>', response)
+                window.location.href = order_complete +'?order_no='+response.order_number+'&trans_id='+response.transaction_id
+            }
+        })
+    }
+    
+    </script>
+    </html>

@@ -71,6 +71,8 @@ TEMPLATES = [
                 "django.contrib.auth.context_processors.auth",
                 "django.contrib.messages.context_processors.messages",
                 "accounts.context_processors.get_vendor",
+                "accounts.context_processors.get_google_api",
+                
             ],
         },
     },
@@ -163,3 +165,5 @@ DEFAULT_FROM_EMAIL = 'foodOnline Marketplace <kailash14916@gmail.com>'
 
 RZP_KEY_ID = 'rzp_test_TMto6YXQia1axD'
 RZP_KEY_SECRET = 'gy009d5PH8MaTlj2ZKBmEdxS'
+
+GOOGLE_API_KEY = 'AIzaSyC4yTudrg9pTcB2khAgrbCMBfVvbviOhVU'

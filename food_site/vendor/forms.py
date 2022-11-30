@@ -1,10 +1,11 @@
 from django import forms
 from .models import *
+from accounts.validators import allow_only_images_validators
 
 class VendorForm(forms.ModelForm):
     
     # css style for input fields
-    vendor_license = forms.ImageField(widget = forms.FileInput(attrs={'class': 'btn btn-info'}))
+    vendor_license = forms.FileField(widget = forms.FileInput(attrs={'class': 'btn btn-info'}),validators=[allow_only_images_validators])
     
     class Meta:
         model = Vendor

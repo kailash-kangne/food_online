@@ -15,5 +15,7 @@ urlpatterns = [
     
     #foodItem CURD
     path('menu_builder/food/add/', views.add_food ,name='add_food'),
-    
+    path('menu_builder/food/edit/<int:pk>', views.edit_food ,name='edit_food'),
+
+
 ]

@@ -5,7 +5,7 @@ from accounts.models import UserProfile
 from accounts.views import check_role_vendor
 
 from menu.models import *
-from menu.forms import CategoryForm
+from menu.forms import CategoryForm, FoodItemForm
 
 from .models import Vendor
 from django.contrib import messages
@@ -127,4 +127,36 @@ def edit_category(request,pk=None):
         "category": category,
     }
     return render(request,'vendor/edit_category.html',context)
+
+def delete_category(request,pk=None):
+    category = get_object_or_404(Category,pk=pk)
+    category.delete()
+    messages.success(request,'category deleted successfully')
+    return redirect("menu_builder")
+
+def add_food(request):
+    
+    if request.method == 'POST':
+        form = FoodItemForm(request.POST,request.FILES)
+        if form.is_valid():
+             food_title= form.cleaned_data['food_title']
+             food=form.save(commit=False)
+             food.vendor = get_vendor(request)
+             food.slug = slugify(food_title)
+             form.save()
+             messages.success(request,'category added successfully')
+             return redirect("foodItems_by_category", food.category.id)
+        else:
+             print(form.errors)
+    else:
+        form=FoodItemForm()
+    context={
+        "form": form,
+    }
+    return render (request,'vendor/add_food.html',context)
+
+
+
+
+
 

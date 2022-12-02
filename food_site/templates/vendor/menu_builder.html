@@ -23,11 +23,14 @@
                             
                             
                             <h5 class='text-uppercase'>Build your food menu</h5>
+                            <hr>
                             
+                            <button class='btn btn-secondary' onclick="history.back()"><i class="fa fa-left" aria-hidden="true"></i>BACK</button>
+                            <br><br>
                             <!-- menu -->
                             <h6>menu categories</h6>
                     
-                            <a href="" class="btn btn-success float-right m-1"><i class="fa fa-plus" aria-hidden="true"></i>add food</a>
+                            <a href="{% url 'add_food' %}" class="btn btn-success float-right m-1"><i class="fa fa-plus" aria-hidden="true"></i>add food</a>
                             <a href="{% url 'add_category' %}" class="btn btn-info float-right m-1"><i class="fa fa-plus" aria-hidden="true"></i>add category</a>
                             <table class="table table-hover table-borderless">
                                 
@@ -40,8 +43,8 @@
                                             <small class='text-muted'> {{cat.description}} </small>
                                             </a>
                                     </td>
-                                    <td><a href= {% url 'edit_category' cat.id %} style="color:unset" > <i class="fa fa-pencil" aria-hidden="true"></i></a></td>
-                                    <td><a><i class="fa fa-trash text-danger" aria-hidden="true"></a></td>
+                                    <td><a href= "{% url 'edit_category' cat.id %}" style="color:unset" > <i class="fa fa-pencil" aria-hidden="true"></i></a></td>
+                                    <td><a href="{% url 'delete_category' cat.id %}" onclick="return confirm('are you sure to delete this category ?')" ><i class="fa fa-trash text-danger" aria-hidden="true"></a></td>
                                   </tr>
                                   {% endfor %} 
                                 </tbody>
@@ -56,5 +59,6 @@
     </div>
 </div>
 <!-- Main Section End -->
-
+<script>
+</script>
 {% endblock %}

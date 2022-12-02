@@ -152,12 +152,14 @@ def add_food(request):
              food.vendor = get_vendor(request)
              food.slug = slugify(food_title)
              form.save()
-             messages.success(request,'category added successfully')
+             messages.success(request,'food added successfully')
              return redirect("foodItems_by_category", food.category.id)
         else:
              print(form.errors)
     else:
         form=FoodItemForm()
+        #modify form
+        form.fields['category'].queryset = Category.objects.filter(vendor=get_vendor(request))
     context={
         "form": form,
     }
@@ -183,12 +185,21 @@ def edit_food(request,pk=None):
              print(form.errors)
     else:
         form = FoodItemForm(instance=food)
+        form.fields['category'].queryset = Category.objects.filter(vendor=get_vendor(request))
         
     context={
         "form": form,
         "food": food,
     }
     return render(request,'vendor/edit_food.html',context)
+
+@login_required(login_url='login')
+@user_passes_test(check_role_vendor)
+def delete_food(request,pk=None):
+    food = get_object_or_404(FoodItem,pk=pk)
+    food.delete()
+    messages.success(request,'food deleted successfully')
+    return redirect("foodItems_by_category", food.category.id)
 
 
 

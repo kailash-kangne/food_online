@@ -29,9 +29,10 @@
                             <br><br>
                             <!-- menu -->
                             <h6>menu categories</h6>
-                    
+                            
                             <a href="{% url 'add_food' %}" class="btn btn-success float-right m-1"><i class="fa fa-plus" aria-hidden="true"></i>add food</a>
                             <a href="{% url 'add_category' %}" class="btn btn-info float-right m-1"><i class="fa fa-plus" aria-hidden="true"></i>add category</a>
+                            {% if categories %}
                             <table class="table table-hover table-borderless">
                                 
                                 <tbody>
@@ -49,6 +50,9 @@
                                   {% endfor %} 
                                 </tbody>
                               </table>
+                              {% else %}
+                              <h5 class="text center"> NO category found </h5>
+                              {% endif %}
                             <!--  menu -->
 
                         </div>

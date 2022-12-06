@@ -10,7 +10,7 @@ autocomplete = new google.maps.places.Autocomplete(
     })
 // function to specify what should happen when the prediction is clicked
 autocomplete.addListener('place_changed', onPlaceChanged);
-}
+};
 
 function onPlaceChanged (){
     var place = autocomplete.getPlace();
@@ -76,7 +76,13 @@ function onPlaceChanged (){
             }
         }
     }
+};
 
+$(document).ready(function(){
+    $('.add_to_cart').on('click', function(e){
+        e.preventDefault();
+        
+        
+    })
+});
 
-
-}

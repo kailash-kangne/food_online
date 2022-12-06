@@ -32,6 +32,17 @@ def vendor_detail(request, vendor_slug):
     }
     return render(request, 'marketplace/vendor_detail.html',context)
 
+def add_to_cart(request, food_id):
+
+     return render(request, 'marketplace/add_to_cart.html')
+
+def decrease_cart(request):
+     return render(request, 'marketplace/decrease_cart.html')
+
+def delete_cart(request):
+     return render(request, 'marketplace/delete_cart.html')
+
+
 
 # def cart(request):
 #     return render(request, 'marketplace/cart.html')

@@ -10,13 +10,14 @@ from orders import views as OrdersViews
 urlpatterns = [
     path("admin/", admin.site.urls),
     path("",views.index,name='home'),
-    path('accounts/', include('accounts.urls')),
+    path('', include('accounts.urls')),
+    path('marketplace/',include('marketplace.urls')),
     # path('orders/', include('orders.urls')),
     
     #cart
-    path('cart/',MarketplaceViews.cart,name='cart'),
-    path('search/',MarketplaceViews.search,name='search'),
-    path('checkout/',MarketplaceViews.checkout,name='checkout'),
+    #path('cart/',MarketplaceViews.cart,name='cart'),
+    #path('search/',MarketplaceViews.search,name='search'),
+    #path('checkout/',MarketplaceViews.checkout,name='checkout'),
     path('place_order/',OrdersViews.place_order,name='place_order'),
     
 

@@ -8,6 +8,7 @@
 __pycache__/
 local_settings.py
 db.sqlite3
+food_site/db.sqlite3
 db.sqlite3-journal
 media
 
@@ -132,6 +133,7 @@ celerybeat.pid
 *.sage.py
 
 # Environments
+food_site/.env
 .env
 .venv
 env/

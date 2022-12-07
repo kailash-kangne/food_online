@@ -1,6 +1,10 @@
-from django.shortcuts import render, get_object_or_404
+from django.shortcuts import render, get_object_or_404, HttpResponse
+from django.http import HttpResponse, JsonResponse
+
 from menu.models import Category , FoodItem
 from vendor.models import Vendor
+from .models import Cart
+
 from orders.forms import OrderForm
 
 from django.db.models import Prefetch
@@ -10,6 +14,7 @@ from django.db.models import Prefetch
 def marketplace(request):
     vendors = Vendor.objects.filter(is_approved=True, user__is_active=True)
     vendor_count = vendors.count()
+    
     context = {
         'vendors': vendors,
         'vendor_count': vendor_count,
@@ -26,15 +31,46 @@ def vendor_detail(request, vendor_slug):
         )
     )#reverse lookup
 
+    if request.user.is_authenticated:
+        cart_items = Cart.objects.filter(user=request.user)
+    else:
+        cart_items = None
     context={
         'vendor': vendor,
         'categories': categories,
+        'cart_items': cart_items,
     }
     return render(request, 'marketplace/vendor_detail.html',context)
 
+def is_ajax(request):
+    return request.META.get('HTTP_X_REQUESTED_WITH') == 'XMLHttpRequest'
+
+
 def add_to_cart(request, food_id):
 
-     return render(request, 'marketplace/add_to_cart.html')
+    if request.user.is_authenticated:
+        if is_ajax(request=request):
+            
+            #check if food item exist
+            try:
+                fooditem= FoodItem.objects.get(id=food_id)
+                #check if user has already added  that food to cart  
+                try:
+                    chkCart = Cart.objects.get(user=request.user,fooditem=fooditem)
+                    #increase cart quantity
+                    chkCart.quantity += 1
+                    chkCart.save()
+                    return JsonResponse({'status': 'success', 'message':'increased cart quantity'})
+                except:
+                    chkCart = Cart.objects.create(user=request.user,fooditem=fooditem, quantity=1)
+                    return JsonResponse({'status': 'success', 'message':'added food to cart'})
+            except:
+                return JsonResponse({'status': 'failed', 'message':'this food not exist'})
+                
+        else:
+            return JsonResponse({'status': 'failed', 'message':'invalid request'})
+    else:
+        return JsonResponse({'status': 'failed', 'message':'plz log in to continue'})
 
 def decrease_cart(request):
      return render(request, 'marketplace/decrease_cart.html')

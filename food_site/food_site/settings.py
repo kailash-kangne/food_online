@@ -74,6 +74,7 @@ TEMPLATES = [
                 "django.contrib.messages.context_processors.messages",
                 "accounts.context_processors.get_vendor",
                 "accounts.context_processors.get_google_api",
+                "marketplace.context_preprocessors.get_cart_counter",
                 
             ],
         },
@@ -158,12 +159,14 @@ MESSAGE_TAGS={
 }
 
 #Email config
+# EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
+
 EMAIL_HOST = config('EMAIL_HOST')
 EMAIL_PORT = config('EMAIL_PORT',cast=int)
 EMAIL_HOST_USER = config('EMAIL_HOST_USER')
 EMAIL_HOST_PASSWORD = config('EMAIL_HOST_PASSWORD')
 EMAIL_USE_TLS = True
-DEFAULT_FROM_EMAIL = 'foodOnline Marketplace <kailash14916@gmail.com>'
+DEFAULT_FROM_EMAIL = f"foodOnline Marketplace <{config('EMAIL_HOST_USER')}>"
 
 RZP_KEY_ID = 'rzp_test_TMto6YXQia1axD'
 RZP_KEY_SECRET = 'gy009d5PH8MaTlj2ZKBmEdxS'

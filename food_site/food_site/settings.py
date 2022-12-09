@@ -87,25 +87,30 @@ WSGI_APPLICATION = "food_site.wsgi.application"
 # Database
 # https://docs.djangoproject.com/en/4.1/ref/settings/#databases
 
+#pg-admin
+DATABASES = {
+    "default": {
+        "ENGINE": "django.db.backends.postgresql",
+        
+        "NAME": "food_pg",
+        "USER": "postgres",
+        "PASSWORD": "root",
+        "HOST": "localhost",
+    }
+}
+
+#xampp
 # DATABASES = {
 #     "default": {
 #         "ENGINE": "django.db.backends.mysql",
 #         'OPTIONS': {'sql_mode': 'traditional',},
-#         "NAME": "food2",
-#         "USER": "root",
-#         "PASSWORD": "",
+#         "NAME": config('DB_NAME'),
+#         "USER": config('DB_USER'),
+#         "PASSWORD": config('DB_PASSWORD'),
+#         "HOST": config('DB_HOST'),
 #     }
 # }
-DATABASES = {
-    "default": {
-        "ENGINE": "django.db.backends.mysql",
-        'OPTIONS': {'sql_mode': 'traditional',},
-        "NAME": config('DB_NAME'),
-        "USER": config('DB_USER'),
-        "PASSWORD": config('DB_PASSWORD'),
-        "HOST": config('DB_HOST'),
-    }
-}
+
 #i made changes
 AUTH_USER_MODEL = 'accounts.User'
 

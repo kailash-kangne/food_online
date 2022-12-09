@@ -10,7 +10,7 @@ from orders.forms import OrderForm
 from django.db.models import Prefetch
 
 from .context_preprocessors import get_cart_counter
-
+from django.contrib.auth.decorators import login_required
 
 # Create your views here.
 def marketplace(request):
@@ -104,11 +104,24 @@ def decrease_cart(request,food_id):
         return JsonResponse({'status': 'login_required', 'message':'plz log in to continue'})
 
 
-def delete_cart(request):
-     return render(request, 'marketplace/delete_cart.html')
+def delete_cart(request,cart_id):
+    if request.user.is_authenticated:
+        if is_ajax(request=request):
+            try:
+                cart_item = Cart.objects.get(user=request.user, id=cart_id)
+                if cart_item:
+                    cart_item.delete()
+                    return JsonResponse({'status': 'success', 'message':'cart item has been deleted', 'cart_counter':get_cart_counter(request)})
+            except:
+                return JsonResponse({'status': 'failed', 'message':'cart item doesnt exist'})
+        else:
+            return JsonResponse({'status': 'failed', 'message':'invalid request'})
+    else:
+        return JsonResponse({'status': 'login_required', 'message':'plz log in to continue'})
 
+@login_required(login_url='login')
 def cart(request):
-    cart_items = Cart.objects.filter(user=request.user)
+    cart_items = Cart.objects.filter(user=request.user).order_by('created_at')
     context={
         'cart_items': cart_items,
     }

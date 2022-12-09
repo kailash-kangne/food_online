@@ -15,9 +15,10 @@ urlpatterns = [
     # path('orders/', include('orders.urls')),
     
     #cart
-    #path('cart/',MarketplaceViews.cart,name='cart'),
+     
+    path('cart/',MarketplaceViews.cart,name='cart'),
     #path('search/',MarketplaceViews.search,name='search'),
-    #path('checkout/',MarketplaceViews.checkout,name='checkout'),
+    path('checkout/',MarketplaceViews.checkout,name='checkout'),
     path('place_order/',OrdersViews.place_order,name='place_order'),
     
 

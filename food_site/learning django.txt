@@ -1,9 +1,16 @@
-food project : 64
+food project : 65
 
 https://getbootstrap.com/docs/4.0/layout/grid/
 https://developer.mozilla.org/en-US/docs/Web/HTTP/Status
 
-djvajlarogsbrdzw
+_________________________________________________________
+
+Common Errors:
+
+
+
+
+
 _________________________________________________________
 #SIGNALS
 
